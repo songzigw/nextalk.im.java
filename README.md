@@ -1,2 +1,2 @@
 # nextalk.im.java
-NexTalk Java IM SDK
+NexTalk IM client SDK in Java
