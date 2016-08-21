@@ -1,2 +1,2 @@
-# nextalk.im.java
-NexTalk IM client SDK in Java
+# songm.im.java
+松美Java客户端SDK（Songm IM client SDK in Java）
