@@ -10,9 +10,10 @@ public class ActionEvent extends EventObject {
 
     private Object data;
 
-    public ActionEvent(EventType source, Object data) {
+    public ActionEvent(EventType source, Object data, Long sequence) {
         super(source);
         this.data = data;
+        this.sequence = sequence;
     }
 
     @Override

@@ -16,6 +16,7 @@
  */
 package songm.im.client;
 
+import songm.im.client.entity.Message;
 import songm.im.client.event.ClientListener;
 
 /**
@@ -33,6 +34,8 @@ public interface IMClient {
     public void connect(String token) throws IMException;
 
     public void disconnect();
+    
+    public void sendMessage(Message message);
 
     public static enum Operation {
         /** 连接授权 */

@@ -17,6 +17,8 @@
 
 package songm.im.client;
 
+import java.util.Date;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -27,10 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import songm.im.client.IMException.ErrorCode;
+import songm.im.client.entity.Message;
 import songm.im.client.entity.Protocol;
 import songm.im.client.entity.Session;
 import songm.im.client.event.AbstractListener;
 import songm.im.client.event.ActionEvent;
+import songm.im.client.event.ActionListener;
 import songm.im.client.event.ActionEvent.EventType;
 import songm.im.client.event.ActionListenerManager;
 import songm.im.client.event.ClientListener;
@@ -136,7 +140,7 @@ public class IMClientImpl implements IMClient {
     public void connect(String token) throws IMException {
         LOG.info("Connecting SongmIM Server... Host:{} Port:{}", host, port);
 
-        listenerManager.trigger(EventType.CONNECTING, token);
+        listenerManager.trigger(EventType.CONNECTING, token, null);
 
         Bootstrap b = new Bootstrap();
         b.group(group);
@@ -186,5 +190,30 @@ public class IMClientImpl implements IMClient {
     public static void main(String[] args) throws Exception {
         IMClientImpl client = IMClientImpl.init("127.0.0.1", 9090);
         client.connect("zhangsong");
+    }
+
+    @Override
+    public void sendMessage(Message message) {
+        Protocol proto = new Protocol();
+        proto.setOperation(Operation.MSG_SEND.getValue());
+        proto.setSequence(new Date().getTime());
+        proto.setBody(JsonUtils.toJson(message).getBytes());
+
+        listenerManager.addListener(EventType.RESPONSE, new ActionListener() {
+
+            private Long sequence = proto.getSequence();
+
+            @Override
+            public Long getSequence() {
+                return sequence;
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+
+            }
+        });
+
+        channelFuture.channel().writeAndFlush(proto);
     }
 }

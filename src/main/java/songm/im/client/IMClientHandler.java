@@ -65,11 +65,11 @@ public class IMClientHandler extends SimpleChannelInboundHandler<Protocol> {
                 } else if (oper.equals(Operation.MESSAGE)) {
                     Message message = JsonUtils.fromJson(pro.getBody(),
                             Message.class);
-                    listenerManager.trigger(EventType.MESSAGE, message);
+                    listenerManager.trigger(EventType.MESSAGE, message, null);
                 } else if (oper.equals(Operation.MSG_SEND)) {
                     Entity ent = JsonUtils
                             .fromJson(pro.getBody(), Entity.class);
-                    listenerManager.trigger(EventType.RESPONSE, ent);
+                    listenerManager.trigger(EventType.RESPONSE, ent, pro.getSequence());
                 }
                 break;
             }
@@ -79,16 +79,16 @@ public class IMClientHandler extends SimpleChannelInboundHandler<Protocol> {
     private void triggerConnAuth(Protocol pro) {
         Session ses = JsonUtils.fromJson(pro.getBody(), Session.class);
         if (ses.getSucceed()) {
-            listenerManager.trigger(EventType.CONNECTED, ses);
+            listenerManager.trigger(EventType.CONNECTED, ses, null);
         } else {
-            listenerManager.trigger(EventType.DISCONNECTED, ses);
+            listenerManager.trigger(EventType.DISCONNECTED, ses, null);
         }
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         LOG.debug("handlerRemoved", ctx);
-        listenerManager.trigger(EventType.DISCONNECTED, null);
+        listenerManager.trigger(EventType.DISCONNECTED, null, null);
     }
 
     @Override
