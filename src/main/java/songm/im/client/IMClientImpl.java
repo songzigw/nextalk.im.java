@@ -138,7 +138,7 @@ public class IMClientImpl implements IMClient {
 
     @Override
     public void connect(String token) throws IMException {
-        LOG.info("Connecting SongmIM Server... Host:{} Port:{}", host, port);
+        LOG.debug("Connecting SongmIM Server... Host:{} Port:{}", host, port);
 
         listenerManager.trigger(EventType.CONNECTING, token, null);
 
@@ -177,7 +177,7 @@ public class IMClientImpl implements IMClient {
 
         Protocol proto = new Protocol();
         proto.setOperation(Operation.CONN_AUTH.getValue());
-        proto.setBody(JsonUtils.toJson(session).getBytes());
+        proto.setBody(JsonUtils.toJson(session, Session.class).getBytes());
 
         channelFuture.channel().writeAndFlush(proto);
     }
@@ -187,17 +187,12 @@ public class IMClientImpl implements IMClient {
         this.listener = listener;
     }
 
-    public static void main(String[] args) throws Exception {
-        IMClientImpl client = IMClientImpl.init("127.0.0.1", 9090);
-        client.connect("zhangsong");
-    }
-
     @Override
     public void sendMessage(Message message) {
         Protocol proto = new Protocol();
         proto.setOperation(Operation.MSG_SEND.getValue());
         proto.setSequence(new Date().getTime());
-        proto.setBody(JsonUtils.toJson(message).getBytes());
+        proto.setBody(JsonUtils.toJson(message, Message.class).getBytes());
 
         listenerManager.addListener(EventType.RESPONSE, new ActionListener() {
 

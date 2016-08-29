@@ -2,7 +2,6 @@
  * Copyright (c) 2016, zhangsong <songm.cn>.
  *
  */
-
 package songm.im.client;
 
 import io.netty.channel.ChannelInitializer;

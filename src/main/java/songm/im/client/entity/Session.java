@@ -18,8 +18,6 @@ package songm.im.client.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 用户与服务端的会话
@@ -33,9 +31,6 @@ public class Session extends Entity implements Serializable {
 
     private static final long serialVersionUID = 1689305158269907021L;
 
-    /** 默认超时间 */
-    public static final long TIME_OUT = 1000 * 24 * 60 * 60;
-
     /** 用户与服务端会话唯一标示符 */
     public static final String CLIENT_KEY = "songm_im_key";
 
@@ -48,22 +43,11 @@ public class Session extends Entity implements Serializable {
     /** 会话访问时间 */
     private Date accessTime;
 
-    private Map<String, Object> attribute;
-
     private String tokenId;
-
-    private Token token;
 
     public Session() {
         createdTime = new Date();
         accessTime = createdTime;
-    }
-
-    public Session(String sessionId, Token token) {
-        this();
-        this.id = sessionId;
-        this.token = token;
-        this.tokenId = token.getId();
     }
 
     public String getId() {
@@ -72,20 +56,6 @@ public class Session extends Entity implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public Object getAttribute(String name) {
-        if (attribute == null) {
-            return null;
-        }
-        return attribute.get(name);
-    }
-
-    public void setAttribute(String name, Object value) {
-        if (attribute == null) {
-            attribute = new HashMap<String, Object>();
-        }
-        attribute.put(name, value);
     }
 
     public void setCreatedTime(Date createdTime) {
@@ -108,10 +78,6 @@ public class Session extends Entity implements Serializable {
         accessTime = new Date();
     }
 
-    public Token getToken() {
-        return token;
-    }
-
     public String getTokenId() {
         return tokenId;
     }
@@ -120,10 +86,4 @@ public class Session extends Entity implements Serializable {
         this.tokenId = tokenId;
     }
 
-    public boolean isTimeout() {
-        if (new Date().getTime() - accessTime.getTime() > TIME_OUT) {
-            return true;
-        }
-        return false;
-    }
 }
