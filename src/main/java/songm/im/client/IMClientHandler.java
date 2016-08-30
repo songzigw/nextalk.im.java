@@ -24,14 +24,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import songm.im.client.IMClient.Operation;
-import songm.im.client.entity.Entity;
-import songm.im.client.entity.Message;
 import songm.im.client.entity.Protocol;
-import songm.im.client.entity.Session;
 import songm.im.client.event.ActionEvent.EventType;
 import songm.im.client.event.ActionListenerManager;
-import songm.im.client.utils.JsonUtils;
+import songm.im.client.handler.Handler;
+import songm.im.client.handler.HandlerManager;
 
 /**
  * 事件消息处理
@@ -48,34 +45,21 @@ public class IMClientHandler extends SimpleChannelInboundHandler<Protocol> {
             .getLogger(IMClientHandler.class);
 
     private ActionListenerManager listenerManager;
+    private HandlerManager handlerManager;
 
     public IMClientHandler(ActionListenerManager listenerManager) {
         this.listenerManager = listenerManager;
+        this.handlerManager = new HandlerManager();
     }
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, Protocol pro)
             throws Exception {
-        int oper = pro.getOperation();
-
-        if (oper == Operation.CONN_AUTH.getValue()) {
-            triggerConnAuth(pro);
-        } else if (oper == Operation.MESSAGE.getValue()) {
-            Message message = JsonUtils.fromJson(pro.getBody(), Message.class);
-            listenerManager.trigger(EventType.MESSAGE, message, null);
-        } else if (oper == Operation.MSG_SEND.getValue()) {
-            Entity ent = JsonUtils.fromJson(pro.getBody(), Entity.class);
-            listenerManager.trigger(EventType.RESPONSE, ent, pro.getSequence());
-        }
-
-    }
-
-    private void triggerConnAuth(Protocol pro) {
-        Session ses = JsonUtils.fromJson(pro.getBody(), Session.class);
-        if (ses.getSucceed()) {
-            listenerManager.trigger(EventType.CONNECTED, ses, null);
+        Handler handler = handlerManager.find(pro.getOperation());
+        if (handler != null) {
+            handler.action(listenerManager, pro);
         } else {
-            listenerManager.trigger(EventType.DISCONNECTED, ses, null);
+            LOG.warn("Not found handler: " + pro.getOperation());
         }
     }
 
