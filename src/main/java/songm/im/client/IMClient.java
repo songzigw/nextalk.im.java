@@ -16,8 +16,10 @@
  */
 package songm.im.client;
 
+import songm.im.client.entity.Entity;
 import songm.im.client.entity.Message;
-import songm.im.client.event.ClientListener;
+import songm.im.client.event.ConnectionListener;
+import songm.im.client.event.ResponseListener;
 
 /**
  * 聊天客户端
@@ -29,13 +31,13 @@ import songm.im.client.event.ClientListener;
  */
 public interface IMClient {
 
-    public void addListener(ClientListener listener);
+    public void addConnectionListener(ConnectionListener listener);
 
     public void connect(String token) throws IMException;
 
     public void disconnect();
     
-    public void sendMessage(Message message);
+    public void sendMessage(Message message, ResponseListener<Entity> response);
 
     public static enum Operation {
         /** 连接授权 */

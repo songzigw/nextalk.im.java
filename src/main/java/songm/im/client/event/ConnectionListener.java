@@ -22,14 +22,14 @@ import songm.im.client.IMException.ErrorCode;
 import songm.im.client.entity.Session;
 
 /**
- * 后台客户端事件监听器
+ * 连接事件监听器
  *
  * @author  zhangsong
  * @since   0.1, 2016-8-2
  * @version 0.1
  *
  */
-public abstract class ClientListener implements EventListener {
+public abstract class ConnectionListener implements EventListener {
 
     /**
      * 当正在连接时，被触发。
@@ -40,7 +40,7 @@ public abstract class ClientListener implements EventListener {
      * 当连接成功时，被触发。
      * @param Session 
      */
-    public abstract void onConnected(Session Session);
+    public abstract void onConnected(Session session);
 
     /**
      * 当连接断开时，被触发。

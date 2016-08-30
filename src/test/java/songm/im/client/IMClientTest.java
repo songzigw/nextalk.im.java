@@ -2,14 +2,14 @@ package songm.im.client;
 
 import songm.im.client.IMException.ErrorCode;
 import songm.im.client.entity.Session;
-import songm.im.client.event.ClientListener;
+import songm.im.client.event.ConnectionListener;
 
 public class IMClientTest {
 
     public static void main(String[] args) {
         IMClientImpl client = IMClientImpl.init("127.0.0.1", 9090);
 
-        client.addListener(new ClientListener() {
+        client.addConnectionListener(new ConnectionListener() {
 
             @Override
             public void onDisconnected(ErrorCode errorCode) {
@@ -32,14 +32,14 @@ public class IMClientTest {
         } catch (IMException e) {
             e.printStackTrace();
         }
-        
+
         try {
             Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
-        //client.disconnect();
+
+        // client.disconnect();
     }
 
 }

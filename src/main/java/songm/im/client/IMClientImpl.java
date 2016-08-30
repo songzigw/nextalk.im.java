@@ -14,10 +14,7 @@
  * limitations under the License.
  * 
  */
-
 package songm.im.client;
-
-import java.util.Date;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -25,19 +22,23 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import songm.im.client.IMException.ErrorCode;
+import songm.im.client.entity.Entity;
 import songm.im.client.entity.Message;
 import songm.im.client.entity.Protocol;
 import songm.im.client.entity.Session;
 import songm.im.client.event.AbstractListener;
 import songm.im.client.event.ActionEvent;
-import songm.im.client.event.ActionListener;
 import songm.im.client.event.ActionEvent.EventType;
+import songm.im.client.event.ActionListener;
 import songm.im.client.event.ActionListenerManager;
-import songm.im.client.event.ClientListener;
+import songm.im.client.event.ConnectionListener;
+import songm.im.client.event.ResponseListener;
 import songm.im.client.utils.JsonUtils;
 
 /**
@@ -62,7 +63,7 @@ public class IMClientImpl implements IMClient {
     private final EventLoopGroup group;
     private final IMClientInitializer clientInit;
     private ChannelFuture channelFuture;
-    private ClientListener listener;
+    private ConnectionListener connectionListener;
 
     private static IMClientImpl instance;
 
@@ -82,8 +83,8 @@ public class IMClientImpl implements IMClient {
                 new AbstractListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        if (listener != null) {
-                            listener.onConnecting();
+                        if (connectionListener != null) {
+                            connectionListener.onConnecting();
                         }
                     }
                 });
@@ -93,8 +94,8 @@ public class IMClientImpl implements IMClient {
                     @Override
                     public void actionPerformed(ActionEvent event) {
                         session = (Session) event.getData();
-                        if (listener != null) {
-                            listener.onConnected(session);
+                        if (connectionListener != null) {
+                            connectionListener.onConnected(session);
                         }
                     }
                 });
@@ -104,9 +105,9 @@ public class IMClientImpl implements IMClient {
                     @Override
                     public void actionPerformed(ActionEvent event) {
                         session = (Session) event.getData();
-                        if (listener != null) {
-                            listener.onDisconnected(ErrorCode.valueOf(session
-                                    .getErrorCode()));
+                        if (connectionListener != null) {
+                            connectionListener.onDisconnected(ErrorCode
+                                    .valueOf(session.getErrorCode()));
                         }
                     }
                 });
@@ -183,12 +184,12 @@ public class IMClientImpl implements IMClient {
     }
 
     @Override
-    public void addListener(ClientListener listener) {
-        this.listener = listener;
+    public void addConnectionListener(ConnectionListener listener) {
+        this.connectionListener = listener;
     }
 
     @Override
-    public void sendMessage(Message message) {
+    public void sendMessage(Message message, ResponseListener<Entity> response) {
         Protocol proto = new Protocol();
         proto.setOperation(Operation.MSG_SEND.getValue());
         proto.setSequence(new Date().getTime());
@@ -205,7 +206,15 @@ public class IMClientImpl implements IMClient {
 
             @Override
             public void actionPerformed(ActionEvent event) {
-
+                if (response == null) {
+                    return;
+                }
+                Entity ent = (Entity) event.getData();
+                if (ent.getSucceed()) {
+                    response.onSuccess(ent);
+                } else {
+                    response.onError(ErrorCode.valueOf(ent.getErrorCode()));
+                }
             }
         });
 
