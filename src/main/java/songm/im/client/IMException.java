@@ -53,7 +53,12 @@ public class IMException extends Exception {
     }
 
     public static enum ErrorCode {
+        // 连接-------------------
         /** 连接出错 */
-        CONN_ERROR
+        CONN_ERROR,
+        
+        // Token异常--------------
+        /** Token无效 */
+        TOKEN_INVALID,
     }
 }
