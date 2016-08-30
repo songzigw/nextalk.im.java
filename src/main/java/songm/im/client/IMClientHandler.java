@@ -81,13 +81,13 @@ public class IMClientHandler extends SimpleChannelInboundHandler<Protocol> {
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        LOG.debug("handlerRemoved", ctx);
+        LOG.debug("HandlerRemoved", ctx);
         listenerManager.trigger(EventType.DISCONNECTED, null, null);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
-        LOG.error("exceptionCaught", cause);
+        LOG.error("ExceptionCaught", cause);
     }
 }

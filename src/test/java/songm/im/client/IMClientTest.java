@@ -39,7 +39,7 @@ public class IMClientTest {
             e.printStackTrace();
         }
         
-        client.disconnect();
+        //client.disconnect();
     }
 
 }
