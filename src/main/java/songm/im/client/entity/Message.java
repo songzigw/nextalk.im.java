@@ -16,7 +16,6 @@
  */
 package songm.im.client.entity;
 
-import java.io.Serializable;
 
 /**
  * 基础消息描述类
@@ -26,7 +25,7 @@ import java.io.Serializable;
  * @version 0.1
  *
  */
-public class Message extends Entity implements Serializable {
+public class Message extends Entity {
 
     private static final long serialVersionUID = 3649240217021961002L;
 

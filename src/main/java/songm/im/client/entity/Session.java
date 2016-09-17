@@ -16,7 +16,6 @@
  */
 package songm.im.client.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -27,15 +26,12 @@ import java.util.Date;
  * @version 0.1
  * 
  */
-public class Session extends Entity implements Serializable {
+public class Session extends Entity {
 
     private static final long serialVersionUID = 1689305158269907021L;
 
-    /** 用户与服务端会话唯一标示符 */
-    public static final String CLIENT_KEY = "songm_im_key";
-
     /** 会话唯一标示 */
-    private String id;
+    private String sessionId;
 
     /** 会话创建时间 */
     private Date createdTime;
@@ -43,19 +39,23 @@ public class Session extends Entity implements Serializable {
     /** 会话访问时间 */
     private Date accessTime;
 
+    /** TokenId */
     private String tokenId;
+    
+    /** UserId */
+    private String uid;
 
     public Session() {
         createdTime = new Date();
         accessTime = createdTime;
     }
 
-    public String getId() {
-        return id;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public void setCreatedTime(Date createdTime) {
@@ -84,6 +84,14 @@ public class Session extends Entity implements Serializable {
 
     public void setTokenId(String tokenId) {
         this.tokenId = tokenId;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
 }

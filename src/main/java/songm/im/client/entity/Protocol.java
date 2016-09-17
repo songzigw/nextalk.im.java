@@ -14,7 +14,6 @@
  * limitations under the License.
  * 
  */
-
 package songm.im.client.entity;
 
 import java.io.Serializable;

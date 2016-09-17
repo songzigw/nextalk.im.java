@@ -16,8 +16,6 @@
  */
 package songm.im.client.entity;
 
-import java.io.Serializable;
-
 /**
  * 用户在IM服务器上的凭证，
  * 一个用户只能有一个Token
@@ -27,21 +25,21 @@ import java.io.Serializable;
  * @version 0.1
  * 
  */
-public class Token extends Entity implements Serializable {
+public class Token extends Entity {
 
     private static final long serialVersionUID = 1356174819334484641L;
 
-    private String id;
+    private String tokenId;
     private String uid;
     private String nick;
     private String avatar;
 
-    public String getId() {
-        return id;
+    public String getTokenId() {
+        return tokenId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
 
     public String getUid() {
@@ -70,8 +68,8 @@ public class Token extends Entity implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Token(id=%s, uid=%s, nick=%s, avatar=%s)",
-                id, uid, nick, avatar);
+        return String.format("Token(tokenId=%s, uid=%s, nick=%s, avatar=%s)",
+                tokenId, uid, nick, avatar);
     }
 
 }
