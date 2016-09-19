@@ -16,18 +16,17 @@
  */
 package songm.im.client.handler;
 
-import songm.im.client.IMClient.Operation;
 import songm.im.client.entity.Message;
 import songm.im.client.entity.Protocol;
-import songm.im.client.event.ActionListenerManager;
 import songm.im.client.event.ActionEvent.EventType;
+import songm.im.client.event.ActionListenerManager;
 import songm.im.client.utils.JsonUtils;
 
 public class MessageHandler implements Handler {
 
     @Override
     public int operation() {
-        return Operation.MESSAGE.getValue();
+        return Handler.Type.MESSAGE.getValue();
     }
 
     @Override

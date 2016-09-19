@@ -39,32 +39,4 @@ public interface IMClient {
     
     public void sendMessage(Message message, ResponseListener<Entity> response);
 
-    public static enum Operation {
-        /** 连接授权 */
-        CONN_AUTH(1),
-
-        /** 消息发生 */
-        MESSAGE(3),
-        /** 消息发送到服务器 */
-        MSG_SEND(4);
-
-        private final int value;
-
-        private Operation(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public static Operation getInstance(int v) {
-            for (Operation type : Operation.values()) {
-                if (type.getValue() == v) {
-                    return type;
-                }
-            }
-            return null;
-        }
-    }
 }

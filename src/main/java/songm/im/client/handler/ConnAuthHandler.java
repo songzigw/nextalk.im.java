@@ -16,7 +16,6 @@
  */
 package songm.im.client.handler;
 
-import songm.im.client.IMClient.Operation;
 import songm.im.client.entity.Protocol;
 import songm.im.client.entity.Session;
 import songm.im.client.event.ActionEvent.EventType;
@@ -27,7 +26,7 @@ public class ConnAuthHandler implements Handler {
 
     @Override
     public int operation() {
-        return Operation.CONN_AUTH.getValue();
+        return Handler.Type.CONN_AUTH.getValue();
     }
 
     @Override

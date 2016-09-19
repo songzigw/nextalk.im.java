@@ -19,8 +19,6 @@ package songm.im.client.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import songm.im.client.IMClient.Operation;
-
 /**
  * 事件处理管理器
  * 
@@ -32,8 +30,8 @@ public class HandlerManager {
     private Map<Integer, Handler> ops = new HashMap<Integer, Handler>();
     {
         ops.put(0, new ResponseHandler());
-        ops.put(Operation.CONN_AUTH.getValue(), new ConnAuthHandler());
-        ops.put(Operation.MESSAGE.getValue(), new MessageHandler());
+        ops.put(Handler.Type.CONN_AUTH.getValue(), new ConnAuthHandler());
+        ops.put(Handler.Type.MESSAGE.getValue(), new MessageHandler());
     }
 
     public Handler find(Integer op) {
@@ -42,7 +40,7 @@ public class HandlerManager {
             return h;
         }
 
-        for (Operation o : Operation.values()) {
+        for (Handler.Type o : Handler.Type.values()) {
             if (o.getValue() == op) {
                 return ops.get(0);
             }
