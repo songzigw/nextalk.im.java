@@ -65,6 +65,8 @@ public class IMClientImpl implements IMClient {
     private final IMClientInitializer clientInit;
     private ChannelFuture channelFuture;
     private ConnectionListener connectionListener;
+    
+    private int connState;
 
     private static IMClientImpl instance;
 
@@ -84,6 +86,7 @@ public class IMClientImpl implements IMClient {
                 new AbstractListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
+                        connState = CONNECTING;
                         if (connectionListener != null) {
                             connectionListener.onConnecting();
                         }
@@ -94,6 +97,7 @@ public class IMClientImpl implements IMClient {
                 new AbstractListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
+                        connState = CONNECTED;
                         session = (Session) event.getData();
                         if (connectionListener != null) {
                             connectionListener.onConnected(session);
@@ -105,6 +109,7 @@ public class IMClientImpl implements IMClient {
                 new AbstractListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
+                        connState = DISCONNECTED;
                         session = (Session) event.getData();
                         if (connectionListener != null) {
                             connectionListener.onDisconnected(ErrorCode
@@ -142,6 +147,9 @@ public class IMClientImpl implements IMClient {
     public void connect(String token) throws IMException {
         LOG.debug("Connecting SongmIM Server... Host:{} Port:{}", host, port);
 
+        if (connState == CONNECTED || connState == CONNECTING) {
+            return;
+        }
         listenerManager.trigger(EventType.CONNECTING, token, null);
 
         Bootstrap b = new Bootstrap();
@@ -220,5 +228,10 @@ public class IMClientImpl implements IMClient {
         });
 
         channelFuture.channel().writeAndFlush(proto);
+    }
+
+    @Override
+    public int getConnState() {
+        return this.connState;
     }
 }

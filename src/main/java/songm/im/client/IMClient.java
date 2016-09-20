@@ -31,6 +31,15 @@ import songm.im.client.event.ResponseListener;
  */
 public interface IMClient {
 
+    /** 连接断开 */
+    public static final int DISCONNECTED = 0;
+    /** 连接上了 */
+    public static final int CONNECTED = 1;
+    /** 正在连接 */
+    public static final int CONNECTING = 2;
+
+    public int getConnState();
+    
     public void addConnectionListener(ConnectionListener listener);
 
     public void connect(String token) throws IMException;
