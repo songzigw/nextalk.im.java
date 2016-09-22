@@ -1,2 +1,2 @@
 # songm.im.java
-松美Java客户端SDK（Songm IM client SDK in Java）
+松美即时聊天Java客户端SDK（Songm IM client SDK in Java）
