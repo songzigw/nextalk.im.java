@@ -16,17 +16,16 @@
  */
 package songm.im.client;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import songm.im.client.IMException.ErrorCode;
 import songm.im.client.entity.Entity;
 import songm.im.client.entity.Message;
@@ -39,7 +38,7 @@ import songm.im.client.event.ActionListener;
 import songm.im.client.event.ActionListenerManager;
 import songm.im.client.event.ConnectionListener;
 import songm.im.client.event.ResponseListener;
-import songm.im.client.handler.Handler;
+import songm.im.client.handler.Handler.Operation;
 import songm.im.client.utils.JsonUtils;
 
 /**
@@ -186,7 +185,7 @@ public class IMClientImpl implements IMClient {
         session.setTokenId(token);
 
         Protocol proto = new Protocol();
-        proto.setOperation(Handler.Type.CONN_AUTH.getValue());
+        proto.setOperation(Operation.CONN_AUTH.getValue());
         proto.setBody(JsonUtils.toJson(session, Session.class).getBytes());
 
         channelFuture.channel().writeAndFlush(proto);
@@ -200,7 +199,7 @@ public class IMClientImpl implements IMClient {
     @Override
     public void sendMessage(Message message, ResponseListener<Entity> response) {
         Protocol proto = new Protocol();
-        proto.setOperation(Handler.Type.MSG_SEND.getValue());
+        proto.setOperation(Operation.MSG_SEND.getValue());
         proto.setSequence(new Date().getTime());
         proto.setBody(JsonUtils.toJson(message, Message.class).getBytes());
 

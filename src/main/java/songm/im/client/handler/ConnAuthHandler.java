@@ -26,7 +26,7 @@ public class ConnAuthHandler implements Handler {
 
     @Override
     public int operation() {
-        return Handler.Type.CONN_AUTH.getValue();
+        return Operation.CONN_AUTH.getValue();
     }
 
     @Override

@@ -31,7 +31,7 @@ public interface Handler {
 
     void action(ActionListenerManager listenerManager, Protocol pro);
     
-    public static enum Type {
+    public static enum Operation {
         /** 连接授权 */
         CONN_AUTH(1),
 
@@ -42,7 +42,7 @@ public interface Handler {
 
         private final int value;
 
-        private Type(int value) {
+        private Operation(int value) {
             this.value = value;
         }
 
@@ -50,10 +50,10 @@ public interface Handler {
             return value;
         }
 
-        public static Type getInstance(int v) {
-            for (Type type : Type.values()) {
-                if (type.getValue() == v) {
-                    return type;
+        public static Operation getInstance(int v) {
+            for (Operation op : Operation.values()) {
+                if (op.getValue() == v) {
+                    return op;
                 }
             }
             return null;

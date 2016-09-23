@@ -26,7 +26,7 @@ public class MessageHandler implements Handler {
 
     @Override
     public int operation() {
-        return Handler.Type.MESSAGE.getValue();
+        return Operation.MESSAGE.getValue();
     }
 
     @Override

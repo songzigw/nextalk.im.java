@@ -31,7 +31,7 @@ public class ResponseHandler implements Handler {
 
     @Override
     public void action(ActionListenerManager listenerManager, Protocol pro) {
-        if (pro.getOperation() == Handler.Type.MSG_SEND.getValue()) {
+        if (pro.getOperation() == Operation.MSG_SEND.getValue()) {
             Entity ent = JsonUtils.fromJson(pro.getBody(), Entity.class);
             listenerManager.trigger(EventType.RESPONSE, ent, pro.getSequence());
         }
