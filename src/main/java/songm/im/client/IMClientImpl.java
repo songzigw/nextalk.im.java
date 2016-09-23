@@ -61,20 +61,18 @@ public class IMClientImpl implements IMClient {
 
     private final ActionListenerManager listenerManager;
     private final EventLoopGroup group;
-    private final IMClientInitializer clientInit;
+
+    private IMClientInitializer clientInit;
     private ChannelFuture channelFuture;
     private ConnectionListener connectionListener;
     
     private int connState;
-
-    private static IMClientImpl instance;
 
     private IMClientImpl(String host, int port) {
         this.host = host;
         this.port = port;
         this.group = new NioEventLoopGroup();
         this.listenerManager = new ActionListenerManager();
-        this.clientInit = new IMClientInitializer(listenerManager);
         this.init();
     }
 
@@ -118,6 +116,7 @@ public class IMClientImpl implements IMClient {
                 });
     }
 
+    private static IMClientImpl instance;
     public static IMClientImpl getInstance() {
         if (instance == null) {
             throw new NullPointerException("IMClient not init");
@@ -126,8 +125,7 @@ public class IMClientImpl implements IMClient {
     }
 
     public static IMClientImpl init(String host, int port) {
-        instance = new IMClientImpl(host, port);
-        return instance;
+        return new IMClientImpl(host, port);
     }
 
     public Session getBacstage() {
@@ -144,18 +142,19 @@ public class IMClientImpl implements IMClient {
 
     @Override
     public void connect(String token) throws IMException {
-        LOG.debug("Connecting SongmIM Server... Host:{} Port:{}", host, port);
-
         if (connState == CONNECTED || connState == CONNECTING) {
             return;
         }
+
+        LOG.debug("Connecting SongmIM Server Host:{} Port:{}", host, port);
+        this.clientInit = new IMClientInitializer(listenerManager);
         listenerManager.trigger(EventType.CONNECTING, token, null);
 
         Bootstrap b = new Bootstrap();
         b.group(group);
         b.channel(NioSocketChannel.class);
-        b.remoteAddress(host, port);
         b.handler(clientInit);
+        b.remoteAddress(host, port);
 
         try {
             // 与服务器建立连接
