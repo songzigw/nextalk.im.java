@@ -71,43 +71,43 @@ public class IMClientImpl implements IMClient {
     private IMClientImpl(String host, int port) {
         this.host = host;
         this.port = port;
-        this.group = new NioEventLoopGroup();
         this.listenerManager = new ActionListenerManager();
+        this.group = new NioEventLoopGroup();
+        this.session = new Session();
         this.init();
     }
 
-    private Session session;
-
+    private final Session session;
     private void init() {
+        IMClientImpl self = this;
         listenerManager.addListener(EventType.CONNECTING,
                 new AbstractListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        connState = CONNECTING;
+                        self.connState = CONNECTING;
                         if (connectionListener != null) {
                             connectionListener.onConnecting();
                         }
                     }
                 });
-
         listenerManager.addListener(EventType.CONNECTED,
                 new AbstractListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        connState = CONNECTED;
-                        session = (Session) event.getData();
+                        self.connState = CONNECTED;
+                        Session ses = (Session) event.getData();
+                        session.setSessionId(ses.getSessionId());
                         if (connectionListener != null) {
                             connectionListener.onConnected(session);
                         }
                     }
                 });
-
         listenerManager.addListener(EventType.DISCONNECTED,
                 new AbstractListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        connState = DISCONNECTED;
-                        session = (Session) event.getData();
+                        self.connState = DISCONNECTED;
+                        // (Session) event.getData();
                         if (connectionListener != null) {
                             connectionListener.onDisconnected(ErrorCode
                                     .valueOf(session.getErrorCode()));
@@ -147,7 +147,8 @@ public class IMClientImpl implements IMClient {
         }
 
         LOG.debug("Connecting SongmIM Server Host:{} Port:{}", host, port);
-        this.clientInit = new IMClientInitializer(listenerManager);
+        session.setTokenId(token);
+        this.clientInit = new IMClientInitializer(listenerManager, session);
         listenerManager.trigger(EventType.CONNECTING, token, null);
 
         Bootstrap b = new Bootstrap();
@@ -159,7 +160,6 @@ public class IMClientImpl implements IMClient {
         try {
             // 与服务器建立连接
             channelFuture = b.connect().sync();
-            this.auth(token);
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOG.error("Connect failure", e);
@@ -177,17 +177,6 @@ public class IMClientImpl implements IMClient {
         if (group != null) {
             group.shutdownGracefully();
         }
-    }
-
-    private void auth(String token) {
-        session = new Session();
-        session.setTokenId(token);
-
-        Protocol proto = new Protocol();
-        proto.setOperation(Operation.CONN_AUTH.getValue());
-        proto.setBody(JsonUtils.toJson(session, Session.class).getBytes());
-
-        channelFuture.channel().writeAndFlush(proto);
     }
 
     @Override

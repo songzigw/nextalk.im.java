@@ -6,6 +6,7 @@ package songm.im.client;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
+import songm.im.client.entity.Session;
 import songm.im.client.event.ActionListenerManager;
 
 /**
@@ -21,11 +22,11 @@ public class IMClientInitializer extends ChannelInitializer<SocketChannel> {
     private ProtocolCodec protocolCodec;
     private IMClientHandler clientHandler;
 
-    public IMClientInitializer(ActionListenerManager listenerManager) {
+    public IMClientInitializer(ActionListenerManager listenerManager, Session session) {
         protocolCodec = new ProtocolCodec();
-        clientHandler = new IMClientHandler(listenerManager);
+        clientHandler = new IMClientHandler(listenerManager, session);
     }
-    
+
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ch.pipeline().addLast(protocolCodec);
