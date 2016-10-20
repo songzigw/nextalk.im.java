@@ -19,7 +19,6 @@ package songm.im.client.event;
 import java.util.EventListener;
 
 import songm.im.client.IMException.ErrorCode;
-import songm.im.client.entity.Entity;
 
 /**
  * 响应事件监听器
@@ -29,20 +28,20 @@ import songm.im.client.entity.Entity;
  * @version 0.1
  *
  */
-public abstract class ResponseListener<T extends Entity> implements EventListener {
+public abstract class ResponseListener<T> implements EventListener {
 
     /**
      * 当相应成功时
      * 
-     * @param backstage
+     * @param data
      */
-    public abstract void onSuccess(T entity);
+    public abstract void onSuccess(T data);
 
     /**
      * 当产生错误时
      * 
-     * @param errorCode
+     * @param errCode
      */
-    public abstract void onError(ErrorCode errorCode);
+    public abstract void onError(ErrorCode errCode);
 
 }

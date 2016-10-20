@@ -27,9 +27,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import songm.im.client.IMException.ErrorCode;
-import songm.im.client.entity.Entity;
 import songm.im.client.entity.Message;
 import songm.im.client.entity.Protocol;
+import songm.im.client.entity.Result;
 import songm.im.client.entity.Session;
 import songm.im.client.event.AbstractListener;
 import songm.im.client.event.ActionEvent;
@@ -81,9 +81,9 @@ public class IMClientImpl implements IMClient {
     private void init() {
         IMClientImpl self = this;
         listenerManager.addListener(EventType.CONNECTING,
-                new AbstractListener() {
+                new AbstractListener<Session>() {
                     @Override
-                    public void actionPerformed(ActionEvent event) {
+                    public void actionPerformed(ActionEvent<Session> event) {
                         self.connState = CONNECTING;
                         if (connectionListener != null) {
                             connectionListener.onConnecting();
@@ -91,26 +91,26 @@ public class IMClientImpl implements IMClient {
                     }
                 });
         listenerManager.addListener(EventType.CONNECTED,
-                new AbstractListener() {
+                new AbstractListener<Session>() {
                     @Override
-                    public void actionPerformed(ActionEvent event) {
+                    public void actionPerformed(ActionEvent<Session> event) {
                         self.connState = CONNECTED;
-                        Session ses = (Session) event.getData();
-                        session.setSessionId(ses.getSessionId());
+                        Result<Session> ret = event.getResult();
+                        session.setSessionId(ret.getData().getSessionId());
                         if (connectionListener != null) {
                             connectionListener.onConnected(session);
                         }
                     }
                 });
         listenerManager.addListener(EventType.DISCONNECTED,
-                new AbstractListener() {
+                new AbstractListener<Object>() {
                     @Override
-                    public void actionPerformed(ActionEvent event) {
+                    public void actionPerformed(ActionEvent<Object> event) {
                         self.connState = DISCONNECTED;
-                        // (Session) event.getData();
+                        Result<Object> ret = event.getResult();
                         if (connectionListener != null) {
                             connectionListener.onDisconnected(ErrorCode
-                                    .valueOf(session.getErrorCode()));
+                                    .valueOf(ret.getErrorCode()));
                         }
                     }
                 });
@@ -141,6 +141,11 @@ public class IMClientImpl implements IMClient {
     }
 
     @Override
+    public int getConnState() {
+        return this.connState;
+    }
+
+    @Override
     public void connect(String token) throws IMException {
         if (connState == CONNECTED || connState == CONNECTING) {
             return;
@@ -148,8 +153,10 @@ public class IMClientImpl implements IMClient {
 
         LOG.debug("Connecting SongmIM Server Host:{} Port:{}", host, port);
         session.setTokenId(token);
+        Result<Session> res = new Result<Session>();
+        res.setData(session);
+        listenerManager.trigger(EventType.CONNECTING, res, null);
         this.clientInit = new IMClientInitializer(listenerManager, session);
-        listenerManager.trigger(EventType.CONNECTING, token, null);
 
         Bootstrap b = new Bootstrap();
         b.group(group);
@@ -185,13 +192,13 @@ public class IMClientImpl implements IMClient {
     }
 
     @Override
-    public void sendMessage(Message message, ResponseListener<Entity> response) {
+    public void sendMessage(Message message, ResponseListener<Message> response) {
         Protocol proto = new Protocol();
         proto.setOperation(Operation.MSG_SEND.getValue());
         proto.setSequence(new Date().getTime());
         proto.setBody(JsonUtils.toJson(message, Message.class).getBytes());
 
-        listenerManager.addListener(EventType.RESPONSE, new ActionListener() {
+        listenerManager.addListener(EventType.RESPONSE, new ActionListener<Message>() {
 
             private Long sequence = proto.getSequence();
 
@@ -201,15 +208,15 @@ public class IMClientImpl implements IMClient {
             }
 
             @Override
-            public void actionPerformed(ActionEvent event) {
+            public void actionPerformed(ActionEvent<Message> event) {
                 if (response == null) {
                     return;
                 }
-                Entity ent = (Entity) event.getData();
-                if (ent.getSucceed()) {
-                    response.onSuccess(ent);
+                Result<Message> msg = event.getResult();
+                if (msg.getSucceed()) {
+                    response.onSuccess(msg.getData());
                 } else {
-                    response.onError(ErrorCode.valueOf(ent.getErrorCode()));
+                    response.onError(ErrorCode.valueOf(msg.getErrorCode()));
                 }
             }
         });
@@ -217,8 +224,4 @@ public class IMClientImpl implements IMClient {
         channelFuture.channel().writeAndFlush(proto);
     }
 
-    @Override
-    public int getConnState() {
-        return this.connState;
-    }
 }

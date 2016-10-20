@@ -16,8 +16,13 @@
  */
 package songm.im.client.handler;
 
-import songm.im.client.entity.Entity;
+import java.lang.reflect.Type;
+
+import com.google.gson.reflect.TypeToken;
+
+import songm.im.client.entity.Message;
 import songm.im.client.entity.Protocol;
+import songm.im.client.entity.Result;
 import songm.im.client.event.ActionEvent.EventType;
 import songm.im.client.event.ActionListenerManager;
 import songm.im.client.utils.JsonUtils;
@@ -31,10 +36,16 @@ public class ResponseHandler implements Handler {
 
     @Override
     public void action(ActionListenerManager listenerManager, Protocol pro) {
+        Result<?> res = null;
+        Type type = null;
+
         if (pro.getOperation() == Operation.MSG_SEND.getValue()) {
-            Entity ent = JsonUtils.fromJson(pro.getBody(), Entity.class);
-            listenerManager.trigger(EventType.RESPONSE, ent, pro.getSequence());
+            type = new TypeToken<Result<Message>>() {
+            }.getType();
         }
+
+        res = JsonUtils.fromJson(pro.getBody(), type);
+        listenerManager.trigger(EventType.RESPONSE, res, pro.getSequence());
     }
 
 }

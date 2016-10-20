@@ -17,20 +17,21 @@
 
 package songm.im.client;
 
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import songm.im.client.IMException.ErrorCode;
 import songm.im.client.entity.Protocol;
+import songm.im.client.entity.Result;
 import songm.im.client.entity.Session;
 import songm.im.client.event.ActionEvent.EventType;
 import songm.im.client.event.ActionListenerManager;
 import songm.im.client.handler.Handler;
-import songm.im.client.handler.HandlerManager;
 import songm.im.client.handler.Handler.Operation;
+import songm.im.client.handler.HandlerManager;
 import songm.im.client.utils.JsonUtils;
 
 /**
@@ -82,7 +83,9 @@ public class IMClientHandler extends SimpleChannelInboundHandler<Protocol> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         LOG.debug("HandlerRemoved", ctx);
-        listenerManager.trigger(EventType.DISCONNECTED, null, null);
+        Result<Object> res = new Result<Object>();
+        res.setErrorCode(ErrorCode.CONN_ERROR.name());
+        listenerManager.trigger(EventType.DISCONNECTED, res, null);
     }
 
     @Override

@@ -16,7 +16,12 @@
  */
 package songm.im.client.handler;
 
+import java.lang.reflect.Type;
+
+import com.google.gson.reflect.TypeToken;
+
 import songm.im.client.entity.Protocol;
+import songm.im.client.entity.Result;
 import songm.im.client.entity.Session;
 import songm.im.client.event.ActionEvent.EventType;
 import songm.im.client.event.ActionListenerManager;
@@ -31,11 +36,12 @@ public class ConnAuthHandler implements Handler {
 
     @Override
     public void action(ActionListenerManager listenerManager, Protocol pro) {
-        Session ses = JsonUtils.fromJson(pro.getBody(), Session.class);
-        if (ses.getSucceed()) {
-            listenerManager.trigger(EventType.CONNECTED, ses, null);
+        Type type = new TypeToken<Result<Session>>() {}.getType();
+        Result<Session> res = JsonUtils.fromJson(pro.getBody(), type);
+        if (res.getSucceed()) {
+            listenerManager.trigger(EventType.CONNECTED, res, null);
         } else {
-            listenerManager.trigger(EventType.DISCONNECTED, ses, null);
+            listenerManager.trigger(EventType.DISCONNECTED, res, null);
         }
     }
 

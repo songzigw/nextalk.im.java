@@ -16,7 +16,6 @@
  */
 package songm.im.client;
 
-import songm.im.client.entity.Entity;
 import songm.im.client.entity.Message;
 import songm.im.client.event.ConnectionListener;
 import songm.im.client.event.ResponseListener;
@@ -46,6 +45,6 @@ public interface IMClient {
 
     public void disconnect();
     
-    public void sendMessage(Message message, ResponseListener<Entity> response);
+    public void sendMessage(Message message, ResponseListener<Message> response);
 
 }
