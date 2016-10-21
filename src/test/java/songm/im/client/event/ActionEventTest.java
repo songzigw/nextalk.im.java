@@ -7,8 +7,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import songm.im.client.entity.Entity;
 import songm.im.client.entity.Message;
+import songm.im.client.entity.Result;
 import songm.im.client.entity.Session;
 import songm.im.client.event.ActionEvent.EventType;
 
@@ -27,37 +27,39 @@ public class ActionEventTest {
 
     @Test
     public void testConnection() {
+        Result<Session> res = new Result<Session>();
         Session ses = new Session();
+        res.setData(ses);
 
         listenerManager.addListener(EventType.CONNECTING,
-                new AbstractListener() {
+                new AbstractListener<Session>() {
                     @Override
-                    public void actionPerformed(ActionEvent event) {
+                    public void actionPerformed(ActionEvent<Session> event) {
                         assertThat(event.getSource(), is(EventType.CONNECTING));
-                        assertThat(event.getData(), is(ses));
+                        assertThat(event.getResult().getData(), is(ses));
                     }
                 });
         listenerManager.addListener(EventType.CONNECTED,
-                new AbstractListener() {
+                new AbstractListener<Session>() {
                     @Override
-                    public void actionPerformed(ActionEvent event) {
+                    public void actionPerformed(ActionEvent<Session> event) {
                         assertThat(event.getSource(), is(EventType.CONNECTED));
-                        assertThat(event.getData(), is(ses));
+                        assertThat(event.getResult().getData(), is(ses));
                     }
                 });
         listenerManager.addListener(EventType.DISCONNECTED,
-                new AbstractListener() {
+                new AbstractListener<Session>() {
                     @Override
-                    public void actionPerformed(ActionEvent event) {
+                    public void actionPerformed(ActionEvent<Session> event) {
                         assertThat(event.getSource(),
                                 is(EventType.DISCONNECTED));
-                        assertThat(event.getData(), is(ses));
+                        assertThat(event.getResult().getData(), is(ses));
                     }
                 });
 
-        listenerManager.trigger(EventType.CONNECTING, ses, null);
-        listenerManager.trigger(EventType.CONNECTED, ses, null);
-        listenerManager.trigger(EventType.DISCONNECTED, ses, null);
+        listenerManager.trigger(EventType.CONNECTING, res, null);
+        listenerManager.trigger(EventType.CONNECTED, res, null);
+        listenerManager.trigger(EventType.DISCONNECTED, res, null);
     }
 
     @Test
@@ -65,9 +67,9 @@ public class ActionEventTest {
         Long seq = new Date().getTime();
 
         // 相应返回的结果对象
-        Entity ent = new Entity();
+        Result<Object> res = new Result<Object>();
 
-        listenerManager.addListener(EventType.RESPONSE, new ActionListener() {
+        listenerManager.addListener(EventType.RESPONSE, new ActionListener<Object>() {
 
             @Override
             public Long getSequence() {
@@ -75,27 +77,29 @@ public class ActionEventTest {
             }
 
             @Override
-            public void actionPerformed(ActionEvent event) {
+            public void actionPerformed(ActionEvent<Object> event) {
                 assertThat(event.getSource(), is(EventType.RESPONSE));
-                assertThat(event.getData(), is(ent));
+                assertThat(event.getResult(), is(res));
             }
         });
 
-        listenerManager.trigger(EventType.RESPONSE, ent, seq);
+        listenerManager.trigger(EventType.RESPONSE, res, seq);
     }
 
     @Test
     public void testMessageReceive() {
+        Result<Message> res = new Result<Message>();
         Message msg = new Message();
+        res.setData(msg);
 
-        listenerManager.addListener(EventType.MESSAGE, new AbstractListener() {
+        listenerManager.addListener(EventType.MESSAGE, new AbstractListener<Message>() {
             @Override
-            public void actionPerformed(ActionEvent event) {
+            public void actionPerformed(ActionEvent<Message> event) {
                 assertThat(event.getSource(), is(EventType.MESSAGE));
-                assertThat(event.getData(), is(msg));
+                assertThat(event.getResult().getData(), is(msg));
             }
         });
 
-        listenerManager.trigger(EventType.MESSAGE, msg, null);
+        listenerManager.trigger(EventType.MESSAGE, res, null);
     }
 }

@@ -103,11 +103,11 @@ public class IMClientImpl implements IMClient {
                     }
                 });
         listenerManager.addListener(EventType.DISCONNECTED,
-                new AbstractListener<Object>() {
+                new AbstractListener<Session>() {
                     @Override
-                    public void actionPerformed(ActionEvent<Object> event) {
+                    public void actionPerformed(ActionEvent<Session> event) {
                         self.connState = DISCONNECTED;
-                        Result<Object> ret = event.getResult();
+                        Result<Session> ret = event.getResult();
                         if (connectionListener != null) {
                             connectionListener.onDisconnected(ErrorCode
                                     .valueOf(ret.getErrorCode()));
@@ -191,15 +191,8 @@ public class IMClientImpl implements IMClient {
         this.connectionListener = listener;
     }
 
-    @Override
-    public void sendMessage(Message message, ResponseListener<Message> response) {
-        Protocol proto = new Protocol();
-        proto.setOperation(Operation.MSG_SEND.getValue());
-        proto.setSequence(new Date().getTime());
-        proto.setBody(JsonUtils.toJson(message, Message.class).getBytes());
-
-        listenerManager.addListener(EventType.RESPONSE, new ActionListener<Message>() {
-
+    private <T> void request(ResponseListener<T> response, Protocol proto) {
+        listenerManager.addListener(EventType.RESPONSE, new ActionListener<T>() {
             private Long sequence = proto.getSequence();
 
             @Override
@@ -208,11 +201,11 @@ public class IMClientImpl implements IMClient {
             }
 
             @Override
-            public void actionPerformed(ActionEvent<Message> event) {
+            public void actionPerformed(ActionEvent<T> event) {
                 if (response == null) {
                     return;
                 }
-                Result<Message> msg = event.getResult();
+                Result<T> msg = event.getResult();
                 if (msg.getSucceed()) {
                     response.onSuccess(msg.getData());
                 } else {
@@ -220,8 +213,16 @@ public class IMClientImpl implements IMClient {
                 }
             }
         });
-
         channelFuture.channel().writeAndFlush(proto);
+    }
+    
+    @Override
+    public void sendMessage(Message message, ResponseListener<Message> response) {
+        Protocol proto = new Protocol();
+        proto.setOperation(Operation.MSG_SEND.getValue());
+        proto.setSequence(new Date().getTime());
+        proto.setBody(JsonUtils.toJson(message, Message.class).getBytes());
+        this.request(response, proto);
     }
 
 }
