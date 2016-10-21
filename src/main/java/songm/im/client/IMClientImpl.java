@@ -147,7 +147,7 @@ public class IMClientImpl implements IMClient {
 
     @Override
     public void connect(String token) throws IMException {
-        if (connState == CONNECTED || connState == CONNECTING) {
+        if (connState != DISCONNECTED) {
             return;
         }
 
@@ -184,6 +184,7 @@ public class IMClientImpl implements IMClient {
         if (group != null) {
             group.shutdownGracefully();
         }
+        connState = DISCONNECTED;
     }
 
     @Override
