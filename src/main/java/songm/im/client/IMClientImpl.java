@@ -184,7 +184,11 @@ public class IMClientImpl implements IMClient {
         if (group != null) {
             group.shutdownGracefully();
         }
-        connState = DISCONNECTED;
+        if (connState != DISCONNECTED) {
+            Result<Session> res = new Result<Session>();
+            res.setErrorCode(ErrorCode.CONN_ERROR.name());
+            listenerManager.trigger(EventType.DISCONNECTED, res, null);
+        }
     }
 
     @Override
