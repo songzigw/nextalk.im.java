@@ -11,8 +11,8 @@
 
 	<dependencies>
         <dependency>
-            <groupId>cn.songm.songmq</groupId>
-            <artifactId>songmq-broker</artifactId>
+            <groupId>cn.songm.im</groupId>
+            <artifactId>songmim-codec</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         
