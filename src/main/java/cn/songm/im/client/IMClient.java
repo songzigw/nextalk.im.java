@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import cn.songm.im.client.handler.BrokerAckHandler;
+import cn.songm.im.client.handler.DisconnectRequestHandler;
 import cn.songm.im.client.handler.HeartbeatRequestHandler;
 import cn.songm.im.client.handler.LoginAuthRequestHandler;
 import cn.songm.im.client.handler.SendRequestHandler;
@@ -133,4 +134,7 @@ public class IMClient {
         sendRequestHandler.buildMessage(f.channel(), msg, listener);
     }
     
+    public void disconnect() {
+        DisconnectRequestHandler.buildMessage(f.channel());
+    }
 }
