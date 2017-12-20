@@ -79,7 +79,7 @@ public class LoginAuthRequestHandler extends AbstractMessageHandler {
         log.debug(ctx.channel().toString());
         this.isConnected = false;
         if (client.getCallback() == null) return;
-        client.getCallback().onDisconnected();
+        client.getCallback().onDisconnect();
     }
 
 }

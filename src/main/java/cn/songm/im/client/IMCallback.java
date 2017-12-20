@@ -4,7 +4,7 @@ import cn.songm.im.codec.model.Message;
 
 public interface IMCallback {
 
-    public void onDisconnected();
+    public void onDisconnect();
 
     public void onMessage(Message message);
 }
