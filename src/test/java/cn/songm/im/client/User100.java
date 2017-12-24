@@ -9,7 +9,7 @@ public class User100 {
 
     private static String ip = "127.0.0.1";
     private static int port = 17181;
-    private static String tokenId = "DT2QPI551FAO4DZU";
+    private static String tokenId = "KQN8U6S7A3QZUTKX";
     private static String uid = "100";
     
     public static void main(String[] args) throws InterruptedException {
