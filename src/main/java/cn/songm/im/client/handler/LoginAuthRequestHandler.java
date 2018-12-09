@@ -46,7 +46,7 @@ public class LoginAuthRequestHandler extends AbstractMessageHandler {
         Result<Session> res = JsonUtils.getInstance().fromJson(p.getBody(), type);
         // 触发回调事件
         CallbackManager.getInstance().trigger(p.getSequence(), res);
-        if (res.getErrorCode() != ErrorCode.OK.getCode()) {
+        if (res.getErrCode() != ErrorCode.OK.getCode()) {
             this.isConnected = true;
             ctx.close().syncUninterruptibly();
             return;

@@ -48,8 +48,8 @@ public class SendRequestHandler extends AbstractMessageHandler {
             public void onCallBack(Object o) {
                 @SuppressWarnings("unchecked")
                 Result<Message> t = (Result<Message>) o;
-                if (t.getErrorCode() != ErrorCode.OK.getCode()) {
-                    listener.onError(t.getErrorCode(), t.getMessage());
+                if (t.getErrCode() != ErrorCode.OK.getCode()) {
+                    listener.onError(t.getErrCode(), t.getErrDesc());
                     return;
                 }
                 listener.onSuccess(t.getData());

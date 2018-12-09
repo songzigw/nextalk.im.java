@@ -104,8 +104,8 @@ public class IMClient {
         // 发起异步连接操作
         f = b.connect().sync();
         Result<Session> r = loginAuthRequestHandler.loginAuth(f.channel());
-        if (r.getErrorCode() != ErrorCode.OK.getCode()) {
-            throw new InterruptedException(String.format("error: %d->%s", r.getErrorCode(), r.getMessage()));
+        if (r.getErrCode() != ErrorCode.OK.getCode()) {
+            throw new InterruptedException(String.format("error: %d->%s", r.getErrCode(), r.getErrDesc()));
         }
         BeanUtils.copyProperties(r.getData(), session);
         log.info("Client -> {}:{} started.", host, port);

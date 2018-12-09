@@ -43,8 +43,8 @@ public class BrokerAckHandler extends AbstractMessageHandler {
         pro.setOperation(Operation.BROACK);
         pro.setSequence(req.getSequence());
         Result<Message> result = new Result<>();
-        result.setErrorCode(errCode.getCode());
-        result.setMessage(errMsg);
+        result.setErrCode(errCode.getCode());
+        result.setErrDesc(errMsg);
         result.setData(message);
         pro.setBody(JsonUtils.getInstance().toJsonBytes(result));
         return pro;
